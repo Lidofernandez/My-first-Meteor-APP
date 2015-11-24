@@ -1,9 +1,30 @@
 Photos = new Mongo.Collection("photos");
 
 if (Meteor.isClient) {
+  Accounts.ui.config({
+    passwordSignupFields: "USERNAME_AND_EMAIL"
+  });
 
   Template.photos.helpers({
-    photos:Photos.find({}, {sort:{createdOn: -1, rating: -1}})
+    photos:Photos.find({}, {sort:{createdOn: -1, rating: -1}}),
+    getUser:function(user_id){
+      var user = Meteor.users.findOne({_id:user_id});
+      if (user) {
+        return user.username;
+      } else {
+        return "anom";
+      }
+    }
+  });
+
+  Template.body.helpers({
+    username:function(){
+      if(Meteor.user()){
+        return Meteor.user().username;
+      } else {
+        return "anonymous internet user";
+      }
+    }
   });
 
   Template.photos.events({
@@ -18,9 +39,8 @@ if (Meteor.isClient) {
       })
     },
     'click .js-stars-photo': function(event){
-      var rating = $(event.currentTarget).data("userrating");
+      var rating = $(event.currentTarget).data('userrating');
       var photo_id = this.id;
-
       Photos.update({_id: photo_id}, 
         {$set: {rating: rating}});
     },
@@ -35,12 +55,15 @@ if (Meteor.isClient) {
       src_img = event.target.src_img.value;
       alt_img = event.target.alt_img.value;
       console.log("src " + src_img + " alt:" + alt_img );
+      if (Meteor.user()) {
+        Photos.insert({
+          src_img: src_img,
+          alt_img: alt_img,
+          createdOn: new Date(),
+          createdBy:Meteor.user()._id
+        });
+      }
 
-      Photos.insert({
-        src_img: src_img,
-        alt_img: alt_img,
-        createdOn: new Date()
-      });
       $("#upload_photo").modal("hide");      
       return false;
 
