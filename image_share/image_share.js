@@ -1,12 +1,52 @@
 Photos = new Mongo.Collection("photos");
 
 if (Meteor.isClient) {
+
+  Session.set("photosLimit", 8);
+
+  lastScrollTop = 0;
+  $(window).scroll(function(event){
+    // test if the scroll is near the bottom of the window
+    if($(window).scrollTop() + $(window).height() > $(document).height() -100) {
+      // where are we in the page?
+      var scrollTop = $(this).scrollTop();
+      //test if I'm going down
+      if(scrollTop > lastScrollTop){
+        // going down
+        Session.set("photosLimit", Session.get("photosLimit") + 4);
+      }
+      lastScrollTop = scrollTop;
+    }
+  });
+
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_AND_EMAIL"
   });
 
   Template.photos.helpers({
-    photos:Photos.find({}, {sort:{createdOn: -1, rating: -1}}),
+    photos:function(){
+      if(Session.get("userFilter")) { // seeting up the filter
+        return Photos.find({createdBy:Session.get("userFilter")}, {sort:{createdOn: -1, rating: -1}});
+      } else {
+        return Photos.find({}, {sort:{createdOn: -1, rating: -1}, limit:Session.get("photosLimit")});
+      }
+    },
+    filtering_images:function(){
+      if(Session.get("userFilter")){
+        return true;
+      } else {
+        return false;
+      }
+    },
+    getFilterUser: function() {
+      if(Session.get("userFilter")){
+        var user = Meteor.users.findOne(
+          {_id:Session.get("userFilter")});
+        return user.username;
+      } else {
+        return false;
+      }
+    },
     getUser:function(user_id){
       var user = Meteor.users.findOne({_id:user_id});
       if (user) {
@@ -46,6 +86,12 @@ if (Meteor.isClient) {
     },
     'click .js-show-photo-form': function(event){
       $("#upload_photo").modal("show");
+    },
+    'click .js-set-image-filter': function(event){
+      Session.set("userFilter", this.createdBy);
+    },
+    'click .js-unset-image-filter': function(event){
+      Session.set("userFilter", undefined);
     }
   });
 
@@ -63,10 +109,8 @@ if (Meteor.isClient) {
           createdBy:Meteor.user()._id
         });
       }
-
       $("#upload_photo").modal("hide");      
       return false;
-
     }
   });
 }
