@@ -1,11 +1,7 @@
-Photos = new Mongo.Collection("photos");
+Session.set("photosLimit", 8);
 
-if (Meteor.isClient) {
-
-  Session.set("photosLimit", 8);
-
-  lastScrollTop = 0;
-  $(window).scroll(function(event){
+lastScrollTop = 0;
+$(window).scroll(function(event){
     // test if the scroll is near the bottom of the window
     if($(window).scrollTop() + $(window).height() > $(document).height() -100) {
       // where are we in the page?
@@ -19,12 +15,12 @@ if (Meteor.isClient) {
     }
   });
 
-  Accounts.ui.config({
-    passwordSignupFields: "USERNAME_AND_EMAIL"
-  });
+Accounts.ui.config({
+  passwordSignupFields: "USERNAME_AND_EMAIL"
+});
 
-  Template.photos.helpers({
-    photos:function(){
+Template.photos.helpers({
+  photos:function(){
       if(Session.get("userFilter")) { // seeting up the filter
         return Photos.find({createdBy:Session.get("userFilter")}, {sort:{createdOn: -1, rating: -1}});
       } else {
@@ -57,22 +53,22 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.body.helpers({
-    username:function(){
-      if(Meteor.user()){
-        return Meteor.user().username;
-      } else {
-        return "anonymous internet user";
-      }
+Template.body.helpers({
+  username:function(){
+    if(Meteor.user()){
+      return Meteor.user().username;
+    } else {
+      return "anonymous internet user";
     }
-  });
+  }
+});
 
-  Template.photos.events({
-    'click .js-photos':function(event){
-      $(event.target).css("width", "50px");
-    },
-    'click .js-del-photo': function(event){
-      var photo_id = this._id;
+Template.photos.events({
+  'click .js-photos':function(event){
+    $(event.target).css("width", "50px");
+  },
+  'click .js-del-photo': function(event){
+    var photo_id = this._id;
       //use jQuery to hide the photo and then a callback function to remove it.
       $("#"+photo_id).hide('slow', function() {
         Photos.remove({"_id": photo_id});
@@ -95,22 +91,21 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.upload_photo.events({
-    'submit .js-add-photo': function(event){
-      var src_img, alt_img;
-      src_img = event.target.src_img.value;
-      alt_img = event.target.alt_img.value;
-      console.log("src " + src_img + " alt:" + alt_img );
-      if (Meteor.user()) {
-        Photos.insert({
-          src_img: src_img,
-          alt_img: alt_img,
-          createdOn: new Date(),
-          createdBy:Meteor.user()._id
-        });
-      }
-      $("#upload_photo").modal("hide");      
-      return false;
+Template.upload_photo.events({
+  'submit .js-add-photo': function(event){
+    var src_img, alt_img;
+    src_img = event.target.src_img.value;
+    alt_img = event.target.alt_img.value;
+    console.log("src " + src_img + " alt:" + alt_img );
+    if (Meteor.user()) {
+      Photos.insert({
+        src_img: src_img,
+        alt_img: alt_img,
+        createdOn: new Date(),
+        createdBy:Meteor.user()._id
+      });
     }
-  });
-}
+    $("#upload_photo").modal("hide");      
+    return false;
+  }
+});
