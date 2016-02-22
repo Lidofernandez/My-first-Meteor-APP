@@ -4,7 +4,7 @@ Meteor.startup(function(){
 			Photos.insert(
 			{
 				src_img: "rambo"+ i + ".jpg",
-				alt_img: "Rambo at home number: " + i  
+				alt_img: "Rambo at home number: " + i
 			}
 			);
 		} // end of the for loop

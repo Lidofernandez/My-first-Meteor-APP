@@ -76,8 +76,8 @@ Template.photos.events({
     },
     'click .js-stars-photo': function(event){
       var rating = $(event.currentTarget).data('userrating');
-      var photo_id = this.id;
-      Photos.update({_id: photo_id}, 
+      var photo_id = this.ratings_id;
+      Photos.update({_id: photo_id},
         {$set: {rating: rating}});
     },
     'click .js-show-photo-form': function(event){
@@ -105,7 +105,7 @@ Template.upload_photo.events({
         createdBy:Meteor.user()._id
       });
     }
-    $("#upload_photo").modal("hide");      
+    $("#upload_photo").modal("hide");
     return false;
   }
 });
