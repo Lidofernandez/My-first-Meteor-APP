@@ -14,5 +14,8 @@ Photos.allow({
   },
   remove: function (userId, doc) {
     return true;
+  },
+  update: function (userId, doc) {
+    return true;
   }
 })
