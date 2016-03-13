@@ -13,9 +13,20 @@ Photos.allow({
     return false;
   },
   remove: function (userId, doc) {
-    return true;
+   if (Meteor.user()) {
+      if (userId != doc.createdBy) {
+        return false;
+      }
+      else {
+        return true;
+      }
+    }
+    return false;
   },
-  update: function (userId, doc) {
-    return true;
+  update:function (userId, doc) {
+    if (Meteor.user()) {
+      return true;
+    }
+    return false;
   }
 })

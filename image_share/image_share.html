@@ -85,10 +85,12 @@
               User:
               <a href="#" class="js-set-image-filter">{{getUser createdBy}}</a>
             </p>
+            {{#if currentUser}}
             <p>
               {{> starsRating mutable=true class="js-stars-photo" ratings_id=_id }}
             </p>
             <button class="js-del-photo btn btn-warning">Delete</button>
+            {{/if}}
           </div>
         </div>
       </div>
