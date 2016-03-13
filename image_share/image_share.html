@@ -68,6 +68,10 @@
     {{#if currentUser}}
     <button class="btn btn-success js-show-photo-form">Upload image</button>
     {{/if}}
+    {{#unless currentUser}}
+    Just login and start have fun!
+    {{/unless}}
+
     <h2>
       {{#if filteringImages}}
       Showing images by user {{getFilterUser}} <a href="#" class="js-unset-image-filter">Show all images</a>
